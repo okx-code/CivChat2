@@ -2,12 +2,11 @@ package vg.civcraft.mc.civchat2.command.commands;
 
 import java.util.List;
 import java.util.UUID;
-
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
 import vg.civcraft.mc.civchat2.ChatStrings;
+import vg.civcraft.mc.civchat2.CivChatMessageDispatcher;
 import vg.civcraft.mc.civchat2.command.ChatCommand;
+import vg.civcraft.mc.namelayer.NameAPI;
 
 public class Tell extends ChatCommand {
 
@@ -24,9 +23,10 @@ public class Tell extends ChatCommand {
 	public boolean execute(CommandSender sender, String[] args) {
 
 		if (args.length == 0) {
-			UUID chattingWith = chatMan.getChannel(player());
+			UUID chattingWith = chatMan.getChannel(player().getUniqueId());
 			if (chattingWith != null) {
-				chatMan.removeChannel(player());
+				chatMan.removeChannel(player().getUniqueId());
+				CivChatMessageDispatcher.dispatchChatChannel(player().getUniqueId(), null);
 				msg(ChatStrings.chatRemovedFromChat);
 			} else {
 				msg(ChatStrings.chatNotInPrivateChat);
@@ -34,19 +34,22 @@ public class Tell extends ChatCommand {
 			return true;
 		}
 
-		Player receiver = argAsPlayer(0);
-		if (receiver == null) {
+		UUID receiverUUID = argAsGlobalPlayer(0);
+		if (receiverUUID == null) {
 			msg(ChatStrings.chatPlayerNotFound);
 			return true;
 		}
 
-		if (! (receiver.isOnline())) {
+		String receiver = NameAPI.getCurrentName(receiverUUID);
+
+		// this shouldn't have sent in the first place
+		/*if (! (receiver.isOnline())) {
 			msg(ChatStrings.chatPlayerIsOffline);
 			logger.debug(parse(ChatStrings.chatPlayerIsOffline));
 			return true;
-		}
+		}*/
 
-		if (player().equals(receiver)) {
+		if (player().getName().equalsIgnoreCase(receiver)) {
 			msg(ChatStrings.chatCantMessageSelf);
 			return true;
 		}
@@ -58,28 +61,27 @@ public class Tell extends ChatCommand {
 				builder.append(args[x] + " ");
 			}
 
-			chatMan.sendPrivateMsg(player(), receiver, builder.toString());
+			chatMan.sendPrivateMsg(player(), receiverUUID, builder.toString());
 			return true;
-		} else if (args.length == 1) {
-			if (DBM.isIgnoringPlayer(player().getUniqueId(), receiver.getUniqueId())) {
+		} else {
+			if (DBM.isIgnoringPlayer(player().getName(), receiver)) {
 				msg(ChatStrings.chatNeedToUnignore, getRealName(receiver));
 				return true;
 			}
 
-			if (DBM.isIgnoringPlayer(receiver.getUniqueId(), player().getUniqueId())) {
+			if (DBM.isIgnoringPlayer(receiver, player().getName())) {
 				msg(ChatStrings.chatPlayerIgnoringYou);
 				return true;
 			}
-			chatMan.addChatChannel(player(), receiver);
+			chatMan.addChatChannel(player().getUniqueId(), receiverUUID);
+			CivChatMessageDispatcher.dispatchChatChannel(player().getUniqueId(), receiverUUID);
 			msg(ChatStrings.chatNowChattingWith, getRealName(receiver));
 			return true;
 		}
-		return false;
 	}
 
 	@Override
 	public List<String> tabComplete(CommandSender sender, String[] args) {
-
 		if (args.length != 1) {
 			return null;
 		}

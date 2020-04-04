@@ -5,6 +5,7 @@ import java.util.List;
 import org.bukkit.command.CommandSender;
 
 import vg.civcraft.mc.civchat2.ChatStrings;
+import vg.civcraft.mc.civchat2.CivChatMessageDispatcher;
 import vg.civcraft.mc.civchat2.command.ChatCommand;
 import vg.civcraft.mc.namelayer.group.Group;
 
@@ -33,17 +34,20 @@ public class IgnoreGroup extends ChatCommand {
 		String name = getRealName(player());
 		// Player added to the list
 		if (!DBM.isIgnoringGroup(name, ignore)) {
+			CivChatMessageDispatcher.dispatchIgnoreGroup(player().getUniqueId(), ignore, true);
 			DBM.addIgnoredGroup(name, ignore);
 			String debugMessage = "Player ignored Group, Player: " + name + " Group: " + ignore;
 			logger.debug(debugMessage);
 			msg(ChatStrings.chatNowIgnoring, ignore);
 			if (group.equals(chatMan.getGroupChatting(player()))) {
-				chatMan.removeGroupChat(player());
+				chatMan.removeGroupChat(player().getUniqueId());
+				CivChatMessageDispatcher.dispatchChatGroup(player().getUniqueId(), -999);
 				msg(ChatStrings.chatMovedToGlobal);
 			}
 			return true;
 		// Player removed from the list
 		} else {
+			CivChatMessageDispatcher.dispatchIgnoreGroup(player().getUniqueId(), ignore, false);
 			DBM.removeIgnoredGroup(name, ignore);
 			String debugMessage = "Player un-ignored Group, Player: " + name + " Group: " + ignore;
 			logger.debug(debugMessage);

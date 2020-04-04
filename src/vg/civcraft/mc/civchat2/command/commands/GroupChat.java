@@ -5,6 +5,7 @@ import java.util.List;
 import org.bukkit.command.CommandSender;
 
 import vg.civcraft.mc.civchat2.ChatStrings;
+import vg.civcraft.mc.civchat2.CivChatMessageDispatcher;
 import vg.civcraft.mc.civchat2.command.ChatCommand;
 import vg.civcraft.mc.namelayer.GroupManager;
 import vg.civcraft.mc.namelayer.NameAPI;
@@ -38,7 +39,8 @@ public class GroupChat extends ChatCommand {
 			// Check if player is in groupchat and move them to normal chat
 			if (isGroupChatting) {
 				msg(ChatStrings.chatMovedToGlobal);
-				chatMan.removeGroupChat(player());
+				chatMan.removeGroupChat(player().getUniqueId());
+				CivChatMessageDispatcher.dispatchChatGroup(player().getUniqueId(), -999);
 				return true;
 			} else {
 				String grpName = gm.getDefaultGroup(player().getUniqueId());
@@ -73,16 +75,18 @@ public class GroupChat extends ChatCommand {
 					return true;
 				} else {
 					msg(ChatStrings.chatGroupNowChattingIn, group.getName());
-					chatMan.removeGroupChat(player());
-					chatMan.addGroupChat(player(), group);
+					chatMan.removeGroupChat(player().getUniqueId());
+					chatMan.addGroupChat(player().getUniqueId(), group);
+					CivChatMessageDispatcher.dispatchChatGroup(player().getUniqueId(), group.getGroupId());
 					return true;
 				}
 			} else {
 				msg(ChatStrings.chatGroupNowChattingIn, group.getName());
-				if (chatMan.getChannel(player()) != null) {
-					chatMan.removeChannel(player());
+				if (chatMan.getChannel(player().getUniqueId()) != null) {
+					chatMan.removeChannel(player().getUniqueId());
 				}
-				chatMan.addGroupChat(player(), group);
+				chatMan.addGroupChat(player().getUniqueId(), group);
+				CivChatMessageDispatcher.dispatchChatGroup(player().getUniqueId(), group.getGroupId());
 				return true;
 			}
 		} else if (args.length > 1) {
@@ -102,8 +106,9 @@ public class GroupChat extends ChatCommand {
 					return true;
 				}
 			} else {
-				if (chatMan.getChannel(player()) != null) {
-					chatMan.removeChannel(player());
+				if (chatMan.getChannel(player().getUniqueId()) != null) {
+					chatMan.removeChannel(player().getUniqueId());
+					CivChatMessageDispatcher.dispatchChatChannel(player().getUniqueId(), null);
 				}
 				chatMan.sendGroupMsg(player(), group, chatMsg.toString());
 				return true;

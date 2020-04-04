@@ -1,5 +1,6 @@
 package vg.civcraft.mc.civchat2.event;
 
+import java.util.UUID;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
@@ -7,7 +8,7 @@ import org.bukkit.event.player.PlayerEvent;
 
 public class PrivateMessageEvent extends PlayerEvent implements Cancellable {
 
-	private final Player receiver;
+	private final UUID receiver;
 
 	private final String message;
 
@@ -16,7 +17,7 @@ public class PrivateMessageEvent extends PlayerEvent implements Cancellable {
 	// Handler list for spigot events
 	private static final HandlerList handlers = new HandlerList();
 
-	public PrivateMessageEvent(final Player player, final Player receiver, final String message) {
+	public PrivateMessageEvent(final Player player, final UUID receiver, final String message) {
 		super(player);
 
 		this.receiver = receiver;
@@ -27,7 +28,7 @@ public class PrivateMessageEvent extends PlayerEvent implements Cancellable {
 	 * Gets the message receiver
 	 * @return The message receiver
 	 */
-	public Player getReceiver() {
+	public UUID getReceiver() {
 
 		return receiver;
 	}

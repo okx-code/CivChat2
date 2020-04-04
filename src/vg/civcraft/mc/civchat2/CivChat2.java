@@ -4,16 +4,18 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
+import org.bukkit.plugin.messaging.Messenger;
 import vg.civcraft.mc.civchat2.command.CivChat2CommandHandler;
 import vg.civcraft.mc.civchat2.database.DatabaseManager;
 import vg.civcraft.mc.civchat2.listeners.CivChat2Listener;
+import vg.civcraft.mc.civchat2.listeners.CivChatMessageListener;
 import vg.civcraft.mc.civchat2.utility.CivChat2Config;
 import vg.civcraft.mc.civchat2.utility.CivChat2FileLogger;
 import vg.civcraft.mc.civchat2.utility.CivChat2Log;
-import vg.civcraft.mc.civchat2.CivChat2Manager;
 import vg.civcraft.mc.civmodcore.ACivMod;
 import vg.civcraft.mc.civmodcore.command.CommandHandler;
 import vg.civcraft.mc.namelayer.GroupManager.PlayerType;
@@ -71,6 +73,16 @@ public class CivChat2 extends ACivMod {
 		chatListener = new CivChat2Listener(chatMan);
 		registerNameLayerPermissions();
 		registerEvents();
+
+		Messenger messenger = getServer().getMessenger();
+		CivChatMessageListener listener = new CivChatMessageListener();
+		messenger.registerOutgoingPluginChannel(this, "BungeeCord");
+		messenger.registerIncomingPluginChannel(this, "BungeeCord", listener);
+		messenger.registerOutgoingPluginChannel(this, "CIVCHAT");
+		messenger.registerIncomingPluginChannel(this, "CIVCHAT", listener);
+
+		// update the cached list of global bungee players every 30 seconds, to stay in sync
+		Bukkit.getScheduler().runTaskTimer(this, () -> BungeePlayers.getInstance().pollPlayers(), 2L, 600L);
 	}
 
 	public void onDisable() {
