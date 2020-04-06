@@ -18,12 +18,11 @@ public class CivChat2FileLogger {
 
 	public void logGlobalMessage(Player sender, String message, Set<String> recivers) {
 
-		String reciversNames = getPlayersNames(recivers);
 		Location playerLocation = sender.getLocation();
 		String messageToLog = String.format(
-			"Sender: [%s], Message: [%s], Location: [%d, %d, %d], Channel: [GLOBAL], Recivers: [%s]",
+			"Sender: [%s], Message: [%s], Location: [%d, %d, %d], Channel: [GLOBAL], Recivers: %s",
 			sender.getName(), message, playerLocation.getBlockX(), playerLocation.getBlockY(),
-			playerLocation.getBlockZ(), reciversNames);
+			playerLocation.getBlockZ(), recivers.size());
 		logger.info(messageToLog);
 	}
 
@@ -39,12 +38,11 @@ public class CivChat2FileLogger {
 
 	public void logGroupMessage(Player sender, String message, String groupName, Set<String> recivers) {
 
-		String reciversNames = getPlayersNames(recivers);
 		Location playerLocation = sender.getLocation();
 		String messageToLog = String.format(
-			"Sender: [%s], Message: [%s], Location: [%d, %d, %d], Channel: [GROUP], GroupName: [%s], Recivers: [%s]",
+			"Sender: [%s], Message: [%s], Location: [%d, %d, %d], Channel: [GROUP], GroupName: [%s], Recivers: %s",
 			sender.getName(), message, playerLocation.getBlockX(), playerLocation.getBlockY(),
-			playerLocation.getBlockZ(), groupName, reciversNames);
+			playerLocation.getBlockZ(), groupName, recivers.size());
 		logger.info(messageToLog);
 	}
 

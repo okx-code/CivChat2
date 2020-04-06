@@ -31,7 +31,7 @@ public class CivChatMessageListener implements PluginMessageListener {
 				Set<UUID> uuids = new HashSet<>(len);
 
 				for (int i = 0; i < len; i++) {
-					uuids.add(UUID.fromString(in.readUTF()));
+					uuids.add(readUUID(in));
 				}
 
 				BungeePlayers.getInstance().updatePlayers(uuids);
@@ -62,7 +62,7 @@ public class CivChatMessageListener implements PluginMessageListener {
 
 		boolean add = msgin.readBoolean();
 
-		UUID from = UUID.fromString(msgin.readUTF());
+		UUID from = readUUID(in);
 		String group = msgin.readUTF();
 
 		if (add) {
@@ -79,8 +79,8 @@ public class CivChatMessageListener implements PluginMessageListener {
 
 		boolean add = msgin.readBoolean();
 
-		UUID from = UUID.fromString(msgin.readUTF());
-		UUID to = UUID.fromString(msgin.readUTF());
+		UUID from = readUUID(in);
+		UUID to = readUUID(in);
 
 		if (add) {
 			datman.addIgnoredPlayer(from, to);
@@ -92,7 +92,7 @@ public class CivChatMessageListener implements PluginMessageListener {
 	private void chatGroup(ByteArrayDataInput in) {
 		ByteArrayDataInput msgin = unwrapForward(in);
 
-		UUID from = UUID.fromString(msgin.readUTF());
+		UUID from = readUUID(in);
 		int groupId = msgin.readInt();
 
 		CivChat2Manager chatman = CivChat2.getInstance().getCivChat2Manager();
@@ -108,7 +108,8 @@ public class CivChatMessageListener implements PluginMessageListener {
 	private void chatChannel(ByteArrayDataInput in) {
 		ByteArrayDataInput msgin = unwrapForward(in);
 
-		UUID from = UUID.fromString(msgin.readUTF());
+		UUID from = readUUID(in);
+
 		String name = msgin.readUTF();
 
 		CivChat2Manager chatman = CivChat2.getInstance().getCivChat2Manager();
@@ -126,10 +127,11 @@ public class CivChatMessageListener implements PluginMessageListener {
 
 		CivChat2Manager chatman = CivChat2.getInstance().getCivChat2Manager();
 
-		UUID uuid = UUID.fromString(msgin.readUTF());
-		UUID uuid2 = UUID.fromString(msgin.readUTF());
+		UUID uuid =readUUID(msgin);
+		UUID uuid2 = readUUID(msgin);
 
-		System.out.println("Got reply " + NameAPI.getCurrentName(uuid) + " and " + NameAPI.getCurrentName(uuid2));
+		System.out.println("Got reply " + NameAPI.getCurrentName(uuid) + " and " + NameAPI
+				.getCurrentName(uuid2));
 
 		chatman.addPlayerReply(uuid, uuid2);
 		chatman.addPlayerReply(uuid2, uuid);
@@ -142,7 +144,7 @@ public class CivChatMessageListener implements PluginMessageListener {
 		Set<UUID> players = new HashSet<>(playersCount);
 
 		for (int i = 0; i < playersCount; i++) {
-			players.add(UUID.fromString(msgin.readUTF()));
+			players.add(readUUID(msgin));
 		}
 
 		String message = msgin.readUTF();
@@ -161,5 +163,11 @@ public class CivChatMessageListener implements PluginMessageListener {
 		in.readFully(msgbytes);
 
 		return ByteStreams.newDataInput(msgbytes);
+	}
+
+	private UUID readUUID(ByteArrayDataInput in) {
+		long mostsig = in.readLong();
+		long leastsig = in.readLong();
+		return new UUID(mostsig, leastsig);
 	}
 }

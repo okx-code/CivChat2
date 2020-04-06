@@ -14,11 +14,18 @@ public class CivChatMessageDispatcher {
 		dispatch(Collections.singleton(recipient), message);
 	}
 
+	private static void writeUUID(ByteArrayDataOutput out, UUID uuid) {
+		out.writeLong(uuid.getMostSignificantBits());
+		out.writeLong(uuid.getLeastSignificantBits());
+	}
+
 	public static void dispatch(Collection<UUID> recipients, String message) {
 		ByteArrayDataOutput msgout = ByteStreams.newDataOutput();
 
 		msgout.writeInt(recipients.size());
-		recipients.forEach(uuid -> msgout.writeUTF(uuid.toString()));
+		for (UUID uuid : recipients) {
+			writeUUID(msgout, uuid);
+		}
 		msgout.writeUTF(message);
 
 		ByteArrayDataOutput out = wrapForward("MESSAGE", msgout);
@@ -29,8 +36,8 @@ public class CivChatMessageDispatcher {
 	public static void dispatchReply(UUID from, UUID to) {
 		ByteArrayDataOutput msgout = ByteStreams.newDataOutput();
 
-		msgout.writeUTF(from.toString());
-		msgout.writeUTF(to.toString());
+		writeUUID(msgout, from);
+		writeUUID(msgout, to);
 
 		sendPluginMessage("BungeeCord", wrapForward("REPLY", msgout).toByteArray());
 	}
@@ -38,7 +45,7 @@ public class CivChatMessageDispatcher {
 	public static void dispatchChatChannel(UUID from, UUID to) {
 		ByteArrayDataOutput msgout = ByteStreams.newDataOutput();
 
-		msgout.writeUTF(from.toString());
+		writeUUID(msgout, from);
 		msgout.writeUTF(to == null ? "CLEAR" : to.toString());
 
 		sendPluginMessage("BungeeCord", wrapForward("CHATCHANNEL", msgout).toByteArray());
@@ -47,7 +54,7 @@ public class CivChatMessageDispatcher {
 	public static void dispatchChatGroup(UUID from, int group) {
 		ByteArrayDataOutput msgout = ByteStreams.newDataOutput();
 
-		msgout.writeUTF(from.toString());
+		writeUUID(msgout, from);
 		msgout.writeInt(group);
 
 		sendPluginMessage("BungeeCord", wrapForward("CHATGROUP", msgout).toByteArray());
@@ -57,8 +64,8 @@ public class CivChatMessageDispatcher {
 		ByteArrayDataOutput msgout = ByteStreams.newDataOutput();
 
 		msgout.writeBoolean(add);
-		msgout.writeUTF(from.toString());
-		msgout.writeUTF(to.toString());
+		writeUUID(msgout, from);
+		writeUUID(msgout, to);
 
 		sendPluginMessage("BungeeCord", wrapForward("IGNOREPLAYER", msgout).toByteArray());
 	}
@@ -67,7 +74,7 @@ public class CivChatMessageDispatcher {
 		ByteArrayDataOutput msgout = ByteStreams.newDataOutput();
 
 		msgout.writeBoolean(add);
-		msgout.writeUTF(from.toString());
+		writeUUID(msgout, from);
 		msgout.writeUTF(group);
 
 		sendPluginMessage("BungeeCord", wrapForward("IGNOREGROUP", msgout).toByteArray());
