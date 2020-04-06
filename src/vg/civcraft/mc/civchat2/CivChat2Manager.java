@@ -339,7 +339,7 @@ public class CivChat2Manager {
 				Player toAdd = Bukkit.getPlayer(uuid);
 				if (toAdd != null && toAdd.isOnline()) {
 					onlineMembers.add(toAdd);
-				} else {
+				} else if (BungeePlayers.isOnline(uuid)) {
 					bungeeRecipients.add(uuid);
 				}
 			}
