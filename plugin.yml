@@ -7,7 +7,7 @@ softdepend: [Mercury, BetterShards]
 description: CivChat2 limits the chat radius to 1000 blocks. However Private Messaging and Group Chat works above the 1000 block chat radius.
 commands:
     tell:
-      aliases: [message, msg, m, pm]
+      aliases: [message, msg, m, pm, t, whisper, w]
     afk:
     reply:
       aliases: [r]
@@ -16,7 +16,7 @@ commands:
     ignoregroup:
       aliases: [ig, igroup, ignoreg]
     groupc:
-      aliases: [groupchat, gchat, gc, g]
+      aliases: [groupchat, gchat, gc, g, chat]
     ignorelist:
     exit:
       aliases: [e]

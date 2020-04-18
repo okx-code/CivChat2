@@ -96,7 +96,6 @@ public class CivChatMessageDispatcher {
 	public static void dispatchPlayerList() {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("LIST");
-		out.writeUTF("ALL");
 
 		sendPluginMessage("CIVCHAT", out.toByteArray());
 	}

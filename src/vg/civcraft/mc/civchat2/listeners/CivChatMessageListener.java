@@ -62,7 +62,7 @@ public class CivChatMessageListener implements PluginMessageListener {
 
 		boolean add = msgin.readBoolean();
 
-		UUID from = readUUID(in);
+		UUID from = readUUID(msgin);
 		String group = msgin.readUTF();
 
 		if (add) {
@@ -79,8 +79,8 @@ public class CivChatMessageListener implements PluginMessageListener {
 
 		boolean add = msgin.readBoolean();
 
-		UUID from = readUUID(in);
-		UUID to = readUUID(in);
+		UUID from = readUUID(msgin);
+		UUID to = readUUID(msgin);
 
 		if (add) {
 			datman.addIgnoredPlayer(from, to);
@@ -92,7 +92,7 @@ public class CivChatMessageListener implements PluginMessageListener {
 	private void chatGroup(ByteArrayDataInput in) {
 		ByteArrayDataInput msgin = unwrapForward(in);
 
-		UUID from = readUUID(in);
+		UUID from = readUUID(msgin);
 		int groupId = msgin.readInt();
 
 		CivChat2Manager chatman = CivChat2.getInstance().getCivChat2Manager();
@@ -108,7 +108,7 @@ public class CivChatMessageListener implements PluginMessageListener {
 	private void chatChannel(ByteArrayDataInput in) {
 		ByteArrayDataInput msgin = unwrapForward(in);
 
-		UUID from = readUUID(in);
+		UUID from = readUUID(msgin);
 
 		String name = msgin.readUTF();
 
