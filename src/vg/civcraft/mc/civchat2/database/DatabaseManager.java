@@ -5,10 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
-
 import vg.civcraft.mc.civchat2.CivChat2;
 import vg.civcraft.mc.civchat2.utility.CivChat2Config;
 import vg.civcraft.mc.civchat2.utility.CivChat2Log;
@@ -202,8 +200,8 @@ public class DatabaseManager {
 	}
 
 	public List<UUID> getIgnoredPlayers(UUID playerUUID) {
-
-		if (ignoredPlayers.containsKey(playerUUID)) {
+		return ignoredPlayers.getOrDefault(playerUUID, new ArrayList<>());
+		/*if (ignoredPlayers.containsKey(playerUUID)) {
 			return ignoredPlayers.get(playerUUID);
 		}
 		List<UUID> ignoredPlayersList = new LinkedList<UUID>();
@@ -219,7 +217,7 @@ public class DatabaseManager {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return null;*/
 	}
 
 	public boolean removeIgnoredPlayer(UUID playerUUID, UUID ignoredPlayerUUID) {
@@ -275,8 +273,8 @@ public class DatabaseManager {
 	}
 
 	public List<String> getIgnoredGroups(UUID playerUUID) {
-
-		if (ignoredGroups.containsKey(playerUUID)) {
+		return ignoredGroups.getOrDefault(playerUUID, new ArrayList<>());
+		/*if (ignoredGroups.containsKey(playerUUID)) {
 			return ignoredGroups.get(playerUUID);
 		}
 		List<String> ignoredGroupsList = new LinkedList<String>();
@@ -292,7 +290,7 @@ public class DatabaseManager {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return null;*/
 	}
 
 	public boolean removeIgnoredGroup(UUID playerUUID, String group) {
