@@ -1,5 +1,6 @@
 package vg.civcraft.mc.civchat2.command;
 
+import vg.civcraft.mc.civchat2.command.commands.Mute;
 import vg.civcraft.mc.civmodcore.command.CommandHandler;
 import vg.civcraft.mc.civchat2.command.commands.Exit;
 import vg.civcraft.mc.civchat2.command.commands.GroupChat;
@@ -19,6 +20,7 @@ public class CivChat2CommandHandler extends CommandHandler {
 		addCommands(new Reply("reply"));
 		addCommands(new GroupChat("groupc"));
 		addCommands(new Ignore("ignore"));
+		addCommands(new Mute("mute"));
 		addCommands(new IgnoreGroup("ignoregroup"));
 		addCommands(new IgnoreList("ignorelist"));
 		addCommands(new Exit("exit"));

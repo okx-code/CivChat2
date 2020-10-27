@@ -115,9 +115,14 @@ public class CivChat2Manager {
 	 * @param chatMessage Message to send from sender to receive
 	 */
 	public void sendPrivateMsg(Player sender, UUID receiver, String chatMessage) {
+		if (DBM.isMuted(sender.getUniqueId())) {
+			sender.sendMessage(ChatColor.RED + "You are muted.");
+			return;
+		}
 
 		PrivateMessageEvent event = new PrivateMessageEvent(sender, receiver, chatMessage);
 		Bukkit.getPluginManager().callEvent(event);
+
 
 		if (event.isCancelled()) {
 			return;
@@ -189,6 +194,11 @@ public class CivChat2Manager {
 		Guard.ArgumentNotNull(chatMessage, "chatMessage");
 		Guard.ArgumentNotNullOrEmpty(messageFormat, "messageFormat");
 		Guard.ArgumentNotNull(recipients, "recipients");
+
+		if (DBM.isMuted(sender.getUniqueId())) {
+			sender.sendMessage(ChatColor.RED + "You are muted.");
+			return;
+		}
 
 		GlobalChatEvent event = new GlobalChatEvent(sender, chatMessage, messageFormat);
 		Bukkit.getPluginManager().callEvent(event);
@@ -319,6 +329,11 @@ public class CivChat2Manager {
 		Guard.ArgumentNotNull(sender, "sender");
 		Guard.ArgumentNotNull(group, "group");
 		Guard.ArgumentNotNullOrEmpty(message, "message");
+
+		if (DBM.isMuted(sender.getUniqueId())) {
+			sender.sendMessage(ChatColor.RED + "You are muted.");
+			return;
+		}
 
 		GroupChatEvent event = new GroupChatEvent(sender, group.getName(), message);
 		Bukkit.getPluginManager().callEvent(event);

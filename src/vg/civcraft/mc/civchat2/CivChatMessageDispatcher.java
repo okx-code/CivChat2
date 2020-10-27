@@ -33,6 +33,22 @@ public class CivChatMessageDispatcher {
 		sendPluginMessage("BungeeCord", out.toByteArray());
 	}
 
+	public static void dispatchMutePlayer(UUID player) {
+		ByteArrayDataOutput msgout = ByteStreams.newDataOutput();
+
+		writeUUID(msgout, player);
+
+		sendPluginMessage("BungeeCord", wrapForward("MUTE", msgout).toByteArray());
+	}
+
+	public static void dispatchUnmutePlayer(UUID player) {
+		ByteArrayDataOutput msgout = ByteStreams.newDataOutput();
+
+		writeUUID(msgout, player);
+
+		sendPluginMessage("BungeeCord", wrapForward("UNMUTE", msgout).toByteArray());
+	}
+
 	public static void dispatchReply(UUID from, UUID to) {
 		ByteArrayDataOutput msgout = ByteStreams.newDataOutput();
 

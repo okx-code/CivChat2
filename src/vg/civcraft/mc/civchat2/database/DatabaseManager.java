@@ -5,7 +5,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import vg.civcraft.mc.civchat2.CivChat2;
 import vg.civcraft.mc.civchat2.utility.CivChat2Config;
@@ -26,6 +29,8 @@ public class DatabaseManager {
 
 	private HashMap<UUID, List<String>> ignoredGroups = new HashMap<UUID, List<String>>();
 
+	private Set<UUID> mutedPlayers = new HashSet<>();
+
 	private String addIgnoredPlayer;
 
 	private String getIgnoredPlayers;
@@ -42,6 +47,10 @@ public class DatabaseManager {
 
 	private String loadIgnoredGroupsList;
 
+	private String addMutedPlayer;
+	private String removeMutedPlayer;
+	private String loadMutedPlayers;
+
 	public DatabaseManager() {
 
 		if (!isValidConnection()) {
@@ -51,6 +60,7 @@ public class DatabaseManager {
 		loadPreparedStatements();
 		loadIgnoredPlayersList();
 		loadIgnoredGroupsList();
+		loadMutedPlayers();
 	}
 
 	public boolean isValidConnection() {
@@ -72,6 +82,8 @@ public class DatabaseManager {
 		db.execute("create table if not exists GroupsIgnoreList("
 				+ "player varchar(36) not null,"
 				+ "ignoredGroup varchar(255) not null);");
+		db.execute("create table if not exists PlayersMuteList("
+				+ "player varchar(36) not null);");
 	}
 
 	public boolean isConnected() {
@@ -91,6 +103,51 @@ public class DatabaseManager {
 
 		loadIgnoredPlayersList = "select * from PlayersIgnoreList";
 		loadIgnoredGroupsList = "select * from GroupsIgnoreList";
+
+		loadMutedPlayers = "select * from PlayersMuteList";
+		removeMutedPlayer = "delete from PlayersMuteList where player = ?;";
+		addMutedPlayer = "insert into PlayersMuteList(player) values (?);";
+	}
+
+	public boolean isMuted(UUID player) {
+		return mutedPlayers.contains(player);
+	}
+
+	public void mute(UUID player) {
+		Objects.requireNonNull(player);
+		if (!mutedPlayers.add(player)) {
+			return;
+		}
+		try (PreparedStatement statement = db.prepareStatement(this.addMutedPlayer)) {
+			statement.setString(1, player.toString());
+			statement.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void unmute(UUID player) {
+		Objects.requireNonNull(player);
+		if (!mutedPlayers.remove(player)) {
+			return;
+		}
+		try (PreparedStatement statement = db.prepareStatement(this.removeMutedPlayer)) {
+			statement.setString(1, player.toString());
+			statement.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void loadMutedPlayers() {
+		try (PreparedStatement statement = db.prepareStatement(this.loadMutedPlayers)) {
+			ResultSet set = statement.executeQuery();
+			while (set.next()) {
+				mutedPlayers.add(UUID.fromString(set.getString(1)));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private boolean addIgnoredPlayerToMap(UUID playerUUID, UUID ignoredPlayerUUID) {

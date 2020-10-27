@@ -51,8 +51,26 @@ public class CivChatMessageListener implements PluginMessageListener {
 				ignorePlayer(in);
 			} else if ("IGNOREGROUP".equals(subchannel)) {
 				ignoreGroup(in);
+			} else if ("MUTE".equalsIgnoreCase(subchannel)) {
+				mutePlayer(in);
+			} else if ("UNMUTE".equalsIgnoreCase(subchannel)) {
+				unmutePlayer(in);
 			}
 		}
+	}
+
+	private void mutePlayer(ByteArrayDataInput in) {
+		ByteArrayDataInput msgin = unwrapForward(in);
+		UUID uuid = readUUID(msgin);
+
+		CivChat2.getInstance().getDatabaseManager().mute(uuid);
+	}
+
+	private void unmutePlayer(ByteArrayDataInput in) {
+		ByteArrayDataInput msgin = unwrapForward(in);
+		UUID uuid = readUUID(msgin);
+
+		CivChat2.getInstance().getDatabaseManager().unmute(uuid);
 	}
 
 	private void ignoreGroup(ByteArrayDataInput in) {

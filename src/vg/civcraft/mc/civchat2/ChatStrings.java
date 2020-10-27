@@ -10,6 +10,8 @@ public class ChatStrings {
 
 	public final static String chatCantIgnoreSelf = "<i>You can't ignore yourself.";
 
+	public final static String chatCantMuteSelf = "<i>You can't mute yourself.";
+
 	public final static String chatNowChattingWith = "<g>You are now chatting with <c>%s.";
 
 	public final static String chatMovedToGlobal = "<i>You are now in global chat.";
@@ -47,4 +49,6 @@ public class ChatStrings {
 	public final static String chatPlayerAfk = "<aqua>That player is currently AFK.";
 
 	public final static String chatGroupMessage = "<gray>[%s] %s: <white>%s";
+	public final static String chatMuted = "<g>You have muted <c>%s";
+	public final static String chatUnmuted = "<g>You have un-muted <c>%s";
 }

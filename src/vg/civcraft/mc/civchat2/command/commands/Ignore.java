@@ -37,6 +37,7 @@ public class Ignore extends ChatCommand {
 		String name = getRealName(player());
 		if (ignoreName.equals(name)) {
 			msg(ChatStrings.chatCantIgnoreSelf);
+			return;
 		}
 		// Player added to the list
 		if (!DBM.isIgnoringPlayer(name, ignoreName)) {
